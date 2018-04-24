@@ -114,11 +114,7 @@ def get_temp_and_humidity(lat, lon):
 	return [w.get_temperature('celsius'), w.get_humidity()]
 	# return [json.loads(w.get_temperature('celsius'), 'utf-8'), w.get_humidity()]
 
-# Main function
-def main():
-
-	init_client()
-
+def init_bot():
 	# Store the keys necessary to access the Twitter API
 	cfg = {
 		"consumer_key"			: "lG608JQsOPZrEUuLBGyW6OUv5",
@@ -127,8 +123,15 @@ def main():
 		"access_token_secret"	: "1OEVW9qw3HAHYtvbGqFF5sjJTLcw7EluMboCYYpGiJGAV"
 	}
 
-	# Get functions
-	api = get_api(cfg)
+	# Get the object of the api for the account
+	return get_api(cfg)
+
+# Main function
+def main():
+
+	init_client()
+	bot = init_bot();
+
 	cur_loc = get_cur_loc()
 	temp_and_humidity = get_temp_and_humidity(float(cur_loc['loc'].split(',')[0]), float(cur_loc['loc'].split(',')[1]))
 	out_temp = temp_and_humidity[0]['temp']
