@@ -24,6 +24,38 @@ def get_cur_loc():
 	r = requests.get(send_url)
 	return json.loads(r.text, "utf-8")
 
+def get_heat_index(c_temp, out_humidity):
+	# The input temperature is in celsius so convert to fahrenheit
+	f_temp = convert(c_temp, 'C')
+
+	# Calculate what the temperature actually feels like
+	feel_temp = float(0)
+
+	if (f_temp >= 80):
+		feel_temp = -42.379 + 									\
+				(2.04901523 * f_temp) + 						\
+				(10.14333127 * out_humidity) - 					\
+				(0.22475541 * f_temp * out_humidity) - 			\
+				(6.83783 * 10**-3 * f_temp**2) - 				\
+				(5.481717 * 10**-2 * out_humidity**2 ) + 		\
+				(1.22874 * 10**-3 * f_temp**2 * out_humidity) + \
+				(8.5282 * 10**-4 * f_temp * out_humidity**2 ) - \
+				(1.99 * 10**-6 * f_temp**2 * out_humidity**2)
+		
+		adjustment = 0
+
+		if (f_temp >= 80 and f_temp <= 112 and out_humidity < 13):
+			adjustment = -(((13 - out_humidity) / 4) * ((17 - abs(f_temp - 95.)) / 17) ** (0.5))
+		elif (f_temp >= 80 and f_temp <= 87 and out_humidity > 85):
+			adjustment = ((out_humidity - 85) / 10) * ((87 - f_temp) / 5)
+
+		feel_temp = feel_temp + adjustment
+	else:
+		feel_temp = 0.5 * (f_temp + 61.0 + ((f_temp - 68.0) * 1.2) + (out_humidity * 0.094))	
+
+	# Return the converted value of the actual temperature in Celsius
+	return convert(feel_temp, 'F')
+
 # Extracts the actual and temperature of a place given the coordinates
 def get_temp_and_humidity(lat, lon):
 	owm = pyowm.OWM('13ff05b52e1127ce27d6c06b1b1cc411')
