@@ -114,24 +114,7 @@ def get_temp_and_humidity(lat, lon):
 	return [w.get_temperature('celsius'), w.get_humidity()]
 	# return [json.loads(w.get_temperature('celsius'), 'utf-8'), w.get_humidity()]
 
-def init_bot():
-	# Store the keys necessary to access the Twitter API
-	cfg = {
-		"consumer_key"			: "lG608JQsOPZrEUuLBGyW6OUv5",
-		"consumer_secret"		: "vDNOXfjkXJ1NDVNMmO603uaMmmrhltj29NiUGBisSfJCScSO75",
-		"access_token"			: "987595171914072064-nJcpTl7DP8cKe5alMgen6k6USmWVU84",
-		"access_token_secret"	: "1OEVW9qw3HAHYtvbGqFF5sjJTLcw7EluMboCYYpGiJGAV"
-	}
-
-	# Get the object of the api for the account
-	return get_api(cfg)
-
-# Main function
-def main():
-
-	init_client()
-	bot = init_bot();
-
+def get_tweet():
 	cur_loc = get_cur_loc()
 	temp_and_humidity = get_temp_and_humidity(float(cur_loc['loc'].split(',')[0]), float(cur_loc['loc'].split(',')[1]))
 	out_temp = temp_and_humidity[0]['temp']
@@ -163,10 +146,31 @@ def main():
 	in_humidity = int(sys.argv[2])
 	in_heat_index = get_heat_index(in_temp, in_humidity)
 
-	tweet = temp_msg + " in " + org + ", " + city + ", " + region + " " + postal + '\n' +											\
-			'\n' 																													\
-			"Outside: T = " + str(round(out_temp, 2)) + " C, H = " + str(out_humidity) + "%, Feels like " + str(round(out_heat_index, 2)) + " C" + '\n'	\
-			"Inside:    T = " + str(round(in_temp, 2)) + " C, H = " + str(in_humidity) + "%, Feels like " + str(round(in_heat_index, 2)) + " C"
+	return (temp_msg + " in " + org + ", " + city + ", " + region + " " + postal + '\n' +																	\
+				'\n' 																																		\
+				"Outside: T = " + str(round(out_temp, 2)) + " C, H = " + str(out_humidity) + "%, Feels like " + str(round(out_heat_index, 2)) + " C" + '\n'	\
+				"Inside:    T = " + str(round(in_temp, 2)) + " C, H = " + str(in_humidity) + "%, Feels like " + str(round(in_heat_index, 2)) + " C")
+	
+
+def init_bot():
+	# Store the keys necessary to access the Twitter API
+	cfg = {
+		"consumer_key"			: "lG608JQsOPZrEUuLBGyW6OUv5",
+		"consumer_secret"		: "vDNOXfjkXJ1NDVNMmO603uaMmmrhltj29NiUGBisSfJCScSO75",
+		"access_token"			: "987595171914072064-nJcpTl7DP8cKe5alMgen6k6USmWVU84",
+		"access_token_secret"	: "1OEVW9qw3HAHYtvbGqFF5sjJTLcw7EluMboCYYpGiJGAV"
+	}
+
+	# Get the object of the api for the account
+	return get_api(cfg)
+
+# Main function
+def main():
+
+	init_client()
+	bot = init_bot()
+
+	tweet = get_tweet()
 	status = api.update_status(status=tweet)
 
 if __name__ == "__main__":
