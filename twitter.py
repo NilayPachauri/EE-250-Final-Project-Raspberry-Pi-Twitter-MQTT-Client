@@ -1,6 +1,7 @@
 import json
 import pyowm
 import requests
+import sys
 import tweepy
 import us
 
@@ -39,7 +40,7 @@ def main():
 	temp_and_humidity = get_temp_and_humidity(float(cur_loc['loc'].split(',')[0]), float(cur_loc['loc'].split(',')[1]))
 	out_temp = temp_and_humidity[0]['temp']
 	out_humidity = temp_and_humidity[1]
-	
+
 	temp_msg = ""
 
 	org = " ".join(cur_loc['org'].split()[1:])
@@ -47,6 +48,10 @@ def main():
 	# Get the two letter abbreviation rather than the state's full name
 	region = us.states.mapping('name', 'abbr')[cur_loc['region']]
 	postal = cur_loc['postal']
+
+	# Store the inside value data
+	in_temp = float(sys.argv[1])
+	in_humidity = int(sys.argv[2])
 
 	tweet = temp_msg + " in " + org + ", " + city + ", " + region + " " + postal
 	status = api.update_status(status=tweet)
