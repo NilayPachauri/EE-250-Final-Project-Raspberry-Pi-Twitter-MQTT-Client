@@ -1,6 +1,8 @@
 import json
+import pyowm
 import requests
 import tweepy
+import us
 
 # Returns the api object of twitter enabling tweet posting
 def get_api(cfg):
@@ -13,6 +15,13 @@ def get_cur_loc():
 	send_url = 'https://ipinfo.io'
 	r = requests.get(send_url)
 	return json.loads(r.text, "utf-8")
+
+# Extracts the actual and temperature of a place given the coordinates
+def get_temp_and_humidity(lat, lon):
+	owm = pyowm.OWM('13ff05b52e1127ce27d6c06b1b1cc411')
+	w = owm.weather_at_coords(lat, lon).get_weather()
+	return [w.get_temperature('celsius'), w.get_humidity()]
+	# return [json.loads(w.get_temperature('celsius'), 'utf-8'), w.get_humidity()]
 
 # Main function
 def main():
@@ -27,6 +36,7 @@ def main():
 	# Get functions
 	api = get_api(cfg)
 	cur_loc = get_cur_loc()
+	temp_and_humidity = get_temp_and_humidity(float(cur_loc['loc'].split(',')[0]), float(cur_loc['loc'].split(',')[1]))
 
 	temp_msg = ""
 
