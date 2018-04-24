@@ -2,6 +2,12 @@ import json
 import requests
 import tweepy
 
+# Returns the api object of twitter enabling tweet posting
+def get_api(cfg):
+	auth = tweepy.OAuthHandler(cfg['consumer_key'], cfg['consumer_secret'])
+	auth.set_access_token(cfg['access_token'], cfg['access_token_secret'])
+	return tweepy.API(auth)
+
 # Extracts a json packet from the webiste and returns a json packet of strings
 def get_cur_loc():
 	send_url = 'https://ipinfo.io'
