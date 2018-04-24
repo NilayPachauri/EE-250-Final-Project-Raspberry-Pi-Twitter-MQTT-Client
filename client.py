@@ -27,6 +27,10 @@ def on_connect(client, userdata, flags, rc):
     client.message_callback_add("m3pi-mqtt-ee250/temp-thread", custom_callback_temp)
     #subscribe to topics of interest here
 
+#Default message callback. Please use custom callbacks.
+def on_message(client, userdata, msg):
+    print("on_message: " + msg.topic + " " + str(msg.payload, "utf-8"))
+
 #Custom callbacks need to be structured with three args like on_message()
 def custom_callback_temp(client, userdata, message):
 
@@ -104,6 +108,14 @@ def get_temp_and_humidity(lat, lon):
 
 # Main function
 def main():
+
+	# Set up client to recieve data
+    client = mqtt.Client()
+    client.on_message = on_message
+    client.on_connect = on_connect
+    client.connect(host="eclipse.usc.edu", port=11000, keepalive=60)
+    client.loop_start()
+
 	# Store the keys necessary to access the Twitter API
 	cfg = {
 		"consumer_key"			: "lG608JQsOPZrEUuLBGyW6OUv5",
