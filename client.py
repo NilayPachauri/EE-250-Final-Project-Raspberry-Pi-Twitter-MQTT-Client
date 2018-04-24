@@ -46,6 +46,14 @@ def custom_callback_temp(client, userdata, message):
           str(type(message.payload)))
 
 
+def init_client():
+	# Set up client to recieve data
+    client = mqtt.Client()
+    client.on_message = on_message
+    client.on_connect = on_connect
+    client.connect(host="eclipse.usc.edu", port=11000, keepalive=60)
+    client.loop_start()
+
 # Twitter Bot Functions
 
 def convert(temp, unit):
@@ -109,12 +117,7 @@ def get_temp_and_humidity(lat, lon):
 # Main function
 def main():
 
-	# Set up client to recieve data
-    client = mqtt.Client()
-    client.on_message = on_message
-    client.on_connect = on_connect
-    client.connect(host="eclipse.usc.edu", port=11000, keepalive=60)
-    client.loop_start()
+	init_client()
 
 	# Store the keys necessary to access the Twitter API
 	cfg = {
