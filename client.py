@@ -14,7 +14,8 @@ import us
 
 # Global Variables
 
-tweet_now = TRUE
+humidity_temperature = 7
+tweet_now = True
 
 # Client Functions
 
@@ -39,13 +40,13 @@ def custom_callback_temp(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message
     convMessage = str(message.payload, "utf-8") #converts massage payload from byte string to string
     if ("tweet" in convMessage):
-    	tweet_now = TRUE
+    	tweet_now = True
 
     print("custom_callback_led: " + message.topic + " " + convMessage)
     print("custom_callback_led: message.payload is of type " + 
           str(type(message.payload)))
 
-
+# Client Initialization
 def init_client():
 	# Set up client to recieve data
     client = mqtt.Client()
@@ -75,6 +76,7 @@ def get_cur_loc():
 	r = requests.get(send_url)
 	return json.loads(r.text, "utf-8")
 
+# Compute the Heat Index from the current temperature and humidity
 def get_heat_index(c_temp, out_humidity):
 	# The input temperature is in celsius so convert to fahrenheit
 	f_temp = convert(c_temp, 'C')
@@ -114,6 +116,7 @@ def get_temp_and_humidity(lat, lon):
 	return [w.get_temperature('celsius'), w.get_humidity()]
 	# return [json.loads(w.get_temperature('celsius'), 'utf-8'), w.get_humidity()]
 
+# Method to compute the message
 def get_tweet():
 	cur_loc = get_cur_loc()
 	temp_and_humidity = get_temp_and_humidity(float(cur_loc['loc'].split(',')[0]), float(cur_loc['loc'].split(',')[1]))
@@ -141,10 +144,13 @@ def get_tweet():
 	region = us.states.mapping('name', 'abbr')[cur_loc['region']]
 	postal = cur_loc['postal']
 
-	# Store the inside value data
-	in_temp = float(sys.argv[1])
-	in_humidity = int(sys.argv[2])
-	in_heat_index = get_heat_index(in_temp, in_humidity)
+	# Adding in direct pull from sensors until MQTT with m3pi works
+	[in_temp, in_humidity] = dht(humidity_temperature, 0)
+
+	# # Store the inside value data
+	# in_temp = float(sys.argv[1])
+	# in_humidity = int(sys.argv[2])
+	# in_heat_index = get_heat_index(in_temp, in_humidity)
 
 	return (temp_msg + " in " + org + ", " + city + ", " + region + " " + postal + '\n' +																	\
 				'\n' 																																		\
@@ -167,11 +173,16 @@ def init_bot():
 # Main function
 def main():
 
+	global tweet_now
+
 	init_client()
 	bot = init_bot()
 
-	tweet = get_tweet()
-	status = api.update_status(status=tweet)
+	while True:
+		if (tweet_now):
+			tweet_now = False
+			tweet = get_tweet()
+			status = api.update_status(status=tweet)
 
 if __name__ == "__main__":
 	main()
