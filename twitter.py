@@ -5,6 +5,13 @@ import sys
 import tweepy
 import us
 
+def convert(temp, unit):
+    unit = unit.lower()
+    if unit == "c":
+        return 9.0 / 5.0 * temp + 32
+    if unit == "f":
+        return (temp - 32)  / 9.0 * 5.0
+
 # Returns the api object of twitter enabling tweet posting
 def get_api(cfg):
 	auth = tweepy.OAuthHandler(cfg['consumer_key'], cfg['consumer_secret'])
