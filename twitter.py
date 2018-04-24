@@ -84,6 +84,17 @@ def main():
 
 	temp_msg = ""
 
+	if (out_heat_index < 0):
+		temp_msg = 'Really cold'
+	elif (out_heat_index < 10):
+		temp_msg = 'Cold'
+	elif (out_heat_index < 20):
+		temp_msg = 'Warm'
+	elif (out_heat_index < 30):
+		temp_msg = 'Hot'
+	else:
+		temp_msg = 'Really hot'
+
 	org = " ".join(cur_loc['org'].split()[1:])
 	city = cur_loc['city']
 	# Get the two letter abbreviation rather than the state's full name
