@@ -22,7 +22,13 @@ def main():
 	api = get_api(cfg)
 	cur_loc = get_cur_loc()
 
-	tweet = "Hello World"
+	org = " ".join(cur_loc['org'].split()[1:])
+	city = cur_loc['city']
+	# Get the two letter abbreviation rather than the state's full name
+	region = us.states.mapping('name', 'abbr')[cur_loc['region']]
+	postal = cur_loc['postal']
+
+	tweet = org + ", " + city + ", " + region + " " + postal
 	status = api.update_status(status=tweet)
 
 if __name__ == "__main__":
