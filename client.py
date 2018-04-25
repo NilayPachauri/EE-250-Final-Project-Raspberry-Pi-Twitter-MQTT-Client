@@ -181,7 +181,7 @@ def main():
 		if (tweet_now):
 			tweet_now = False
 			tweet = get_tweet()
-			status = bot.update_status(status=tweet)
+			bot.update_status(status=tweet)
 
 if __name__ == "__main__":
 	main()
