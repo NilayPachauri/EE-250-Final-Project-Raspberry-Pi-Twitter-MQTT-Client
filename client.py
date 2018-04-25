@@ -144,6 +144,7 @@ def get_tweet():
 
 	# Adding in direct pull from sensors until MQTT with m3pi works
 	[in_temp, in_humidity] = dht(humidity_temperature, 0)
+	in_heat_index = get_heat_index(in_temp, in_humidity)
 
 	# # Store the inside value data
 	# in_temp = float(sys.argv[1])
