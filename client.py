@@ -181,7 +181,10 @@ def main():
 		if (tweet_now):
 			tweet_now = False
 			tweet = get_tweet()
-			bot.update_status(status=tweet)
+			try:
+				bot.update_status(status=tweet)
+			except tweepy.TweepError as e:
+				print(e.reason)
 
 if __name__ == "__main__":
 	main()
