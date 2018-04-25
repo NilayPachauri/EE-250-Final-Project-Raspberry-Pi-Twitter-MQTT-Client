@@ -22,8 +22,6 @@ tweet_now = True
 def on_connect(client, userdata, flags, rc):
 	print("Connected to server (i.e., broker) with result code "+str(rc))
 
-	grovepi.pinMode(button, "INPUT")
-
 	client.subscribe("m3pi-mqtt-ee250/temp-thread")
 	client.message_callback_add("m3pi-mqtt-ee250/temp-thread", custom_callback_temp)
 	#subscribe to topics of interest here
