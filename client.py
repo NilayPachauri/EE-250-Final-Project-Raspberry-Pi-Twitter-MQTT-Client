@@ -20,49 +20,47 @@ tweet_now = True
 # Client Functions
 
 def on_connect(client, userdata, flags, rc):
-    print("Connected to server (i.e., broker) with result code "+str(rc))
+	print("Connected to server (i.e., broker) with result code "+str(rc))
 
-    grovepi.pinMode(button, "INPUT")
-
-    client.subscribe("m3pi-mqtt-ee250/temp-thread")
-    client.message_callback_add("m3pi-mqtt-ee250/temp-thread", custom_callback_temp)
-    #subscribe to topics of interest here
+	client.subscribe("m3pi-mqtt-ee250/temp-thread")
+	client.message_callback_add("m3pi-mqtt-ee250/temp-thread", custom_callback_temp)
+	#subscribe to topics of interest here
 
 #Default message callback. Please use custom callbacks.
 def on_message(client, userdata, msg):
-    print("on_message: " + msg.topic + " " + str(msg.payload, "utf-8"))
+	print("on_message: " + msg.topic + " " + str(msg.payload, "utf-8"))
 
 #Custom callbacks need to be structured with three args like on_message()
 def custom_callback_temp(client, userdata, message):
 
 	global tweet_now
 
-    #the third argument is 'message' here unlike 'msg' in on_message
-    convMessage = str(message.payload, "utf-8") #converts massage payload from byte string to string
-    if ("tweet" in convMessage):
-    	tweet_now = True
+	#the third argument is 'message' here unlike 'msg' in on_message
+	convMessage = str(message.payload, "utf-8") #converts massage payload from byte string to string
+	if ("tweet" in convMessage):
+		tweet_now = True
 
-    print("custom_callback_led: " + message.topic + " " + convMessage)
-    print("custom_callback_led: message.payload is of type " + 
-          str(type(message.payload)))
+	print("custom_callback_led: " + message.topic + " " + convMessage)
+	print("custom_callback_led: message.payload is of type " + 
+		  str(type(message.payload)))
 
 # Client Initialization
 def init_client():
 	# Set up client to recieve data
-    client = mqtt.Client()
-    client.on_message = on_message
-    client.on_connect = on_connect
-    client.connect(host="eclipse.usc.edu", port=11000, keepalive=60)
-    client.loop_start()
+	client = mqtt.Client()
+	client.on_message = on_message
+	client.on_connect = on_connect
+	client.connect(host="eclipse.usc.edu", port=11000, keepalive=60)
+	client.loop_start()
 
 # Twitter Bot Functions
 
 def convert(temp, unit):
-    unit = unit.lower()
-    if unit == "c":
-        return 9.0 / 5.0 * temp + 32
-    if unit == "f":
-        return (temp - 32)  / 9.0 * 5.0
+	unit = unit.lower()
+	if unit == "c":
+		return 9.0 / 5.0 * temp + 32
+	if unit == "f":
+		return (temp - 32)  / 9.0 * 5.0
 
 # Returns the api object of twitter enabling tweet posting
 def get_api(cfg):
@@ -146,6 +144,7 @@ def get_tweet():
 
 	# Adding in direct pull from sensors until MQTT with m3pi works
 	[in_temp, in_humidity] = dht(humidity_temperature, 0)
+	in_heat_index = get_heat_index(in_temp, in_humidity)
 
 	# # Store the inside value data
 	# in_temp = float(sys.argv[1])
@@ -182,7 +181,10 @@ def main():
 		if (tweet_now):
 			tweet_now = False
 			tweet = get_tweet()
-			status = api.update_status(status=tweet)
+			try:
+				bot.update_status(status=tweet)
+			except tweepy.TweepError as e:
+				print(e.reason)
 
 if __name__ == "__main__":
 	main()
