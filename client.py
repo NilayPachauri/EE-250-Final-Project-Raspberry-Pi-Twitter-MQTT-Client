@@ -15,7 +15,7 @@ import us
 # Global Variables
 
 humidity_temperature = 7
-tweet_now = True
+tweet_now = False 
 
 # Client Functions
 
