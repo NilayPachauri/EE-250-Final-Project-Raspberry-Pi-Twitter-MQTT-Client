@@ -48,6 +48,9 @@ def custom_callback_temp(client, userdata, message):
 
 	[in_temp, in_humidity] = convMessage.split(',')
 
+        print(in_temp)
+        print(in_humidity)
+
 	print("custom_callback_led: " + message.topic + " " + convMessage)
 	print("custom_callback_led: message.payload is of type " + 
 		  str(type(message.payload)))
