@@ -5,6 +5,7 @@ from grovepi import *
 import grovepi
 
 # Twitter Bot Imports
+import datetime
 import json
 import pyowm
 import requests
@@ -17,7 +18,7 @@ import us
 in_temp = 0.00
 in_humidity = 0.00
 humidity_temperature = 7
-tweet_now = True
+tweet_now = False 
 
 # Client Functions
 
@@ -80,6 +81,11 @@ def get_cur_loc():
 	send_url = 'https://ipinfo.io'
 	r = requests.get(send_url)
 	return json.loads(r.text, "utf-8")
+
+# Returns the timestamp in proper format
+def get_timestamp():
+	now = datetime.datetime.now()
+	return now.strftime("%A, %B %d, %Y at %I:%M:%S %p")
 
 # Compute the Heat Index from the current temperature and humidity
 def get_heat_index(c_temp, out_humidity):
@@ -160,7 +166,8 @@ def get_tweet():
 	# in_humidity = int(sys.argv[2])
 	# in_heat_index = get_heat_index(in_temp, in_humidity)
 
-	return (temp_msg + " in " + org + ", " + city + ", " + region + " " + postal + '\n' +																	\
+	return (	get_timestamp() + '\n' + '\n' + 																											\
+				temp_msg + " in " + org + ", " + city + ", " + region + " " + postal + '\n' +																\
 				'\n' 																																		\
 				"Outside: T = " + str(round(out_temp, 2)) + " C, H = " + str(out_humidity) + "%, Feels like " + str(round(out_heat_index, 2)) + " C" + '\n'	\
 				"Inside:    T = " + str(round(in_temp, 2)) + " C, H = " + str(in_humidity) + "%, Feels like " + str(round(in_heat_index, 2)) + " C")
