@@ -17,7 +17,7 @@ import us
 
 in_temp = 0.00
 in_humidity = 0.00
-humidity_temperature = 7
+# humidity_temperature = 7
 tweet_now = False 
 
 # Client Functions
