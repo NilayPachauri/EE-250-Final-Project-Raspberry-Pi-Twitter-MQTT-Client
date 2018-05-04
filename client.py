@@ -14,6 +14,8 @@ import us
 
 # Global Variables
 
+in_temp = 0.00
+in_humidity = 0.00
 humidity_temperature = 7
 tweet_now = True
 
@@ -35,10 +37,15 @@ def custom_callback_temp(client, userdata, message):
 
 	global tweet_now
 
+	global in_temp
+	global in_humidity
+
 	#the third argument is 'message' here unlike 'msg' in on_message
 	convMessage = str(message.payload, "utf-8") #converts massage payload from byte string to string
-	if ("tweet" in convMessage):
+	if ("," in convMessage):
 		tweet_now = True
+
+	[in_temp, in_humidity] = convMessage.split(',')
 
 	print("custom_callback_led: " + message.topic + " " + convMessage)
 	print("custom_callback_led: message.payload is of type " + 
@@ -143,7 +150,9 @@ def get_tweet():
 	postal = cur_loc['postal']
 
 	# Adding in direct pull from sensors until MQTT with m3pi works
-	[in_temp, in_humidity] = dht(humidity_temperature, 0)
+	# [in_temp, in_humidity] = dht(humidity_temperature, 0)
+	# in_heat_index = get_heat_index(in_temp, in_humidity)
+
 	in_heat_index = get_heat_index(in_temp, in_humidity)
 
 	# # Store the inside value data
