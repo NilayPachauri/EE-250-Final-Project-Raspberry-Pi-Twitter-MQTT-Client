@@ -46,7 +46,9 @@ def custom_callback_temp(client, userdata, message):
 	if ("," in convMessage):
 		tweet_now = True
 
-	[in_temp, in_humidity] = convMessage.split(',')
+	[in_temp, in_humidity] = [float(n) for n in convMessage.split(',')]
+
+
 
 	print(in_temp)
 	print(in_humidity)
